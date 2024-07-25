@@ -4,67 +4,69 @@ import Iframe from "react-iframe";
 interface Message {
   messageId: string;
   authorName: string;
+  authorAvatar: string;
   content: string;
 }
 
-const getChannelAvatar = (channelId: string) => {
-  fetch(`https://kick.com/api/v2/channels/${channelId}/`)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
-}
-
-getChannelAvatar("EnduroDBK");
+const getChannelAvatar = async (streamerName: string, senderName: string) => {
+  try {
+    const response = await fetch(`https://kick.com/api/v2/channels/${streamerName}/users/${senderName}`);
+    const data = await response.json();
+    return data.profile_pic || "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+  } catch (error) {
+    console.error("Error fetching user avatar:", error);
+    return "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+  }
+};
 
 export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
-  const [channelId, setChannelId] = useState<number>(0);
+  const [channelId, setChannelId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    fetch(`https://kick.com/api/v2/channels/${streamerNickname}/`)
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchChannelId = async () => {
+      try {
+        const response = await fetch(`https://kick.com/api/v2/channels/${streamerNickname}/`);
+        const data = await response.json();
         setChannelId(data.id);
-      });
+      } catch (error) {
+        console.error("Error fetching channel ID:", error);
+      }
+    };
+
+    fetchChannelId();
   }, [streamerNickname]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (channelId !== 0) {
-  //       fetch(`https://kick.com/api/v2/channels/${channelId}/messages`)
-  //         .then((response) => response.json())
-  //         .then((data) => {
-  //           // data.data.messages.forEach((message: any) => {
-  //           //   setMessages((prevMessages) => [...prevMessages, {
-  //           //     messageId: message.id,
-  //           //     authorName: message.sender.username,
-  //           //     content: message.content
-  //           //   }]);
-  //           // });
+  useEffect(() => {
+    if (channelId === null) return;
 
-  //           console.log(data);
-  //         });
-  //     }
-  //   }, 2500);
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`https://kick.com/api/v2/channels/${channelId}/messages`);
+        const data = await response.json();
+        setMessages(data.data.messages);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
 
-  //   return () => clearInterval(interval);
-  // }, [channelId]);
+    const interval = setInterval(fetchMessages, 2000);
+
+    return () => clearInterval(interval);
+  }, [channelId]);
 
   return (
-    <div className="Chat flex w-[100%] justify-center">
-      {messages.length > 0 ? (
-        <div className="w-[100%] h-[100%] flex flex-col gap-2">
-          {messages.map((message) => (
-            <div key={message.messageId} className="flex gap-2">
-              <p>{message.authorName}</p>
+    <div className="Chat max-h-[90%] w-[80%] overflow-auto">
+      {messages.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {messages.map((message: any) => (
+            <div key={message.id} className="flex gap-2 bg-black/40 p-2">
+              <p>{message.sender.username}</p>
               <p>{message.content}</p>
             </div>
           ))}
         </div>
-      ) : (
-        <p>Loading...</p>
       )}
     </div>
-  )
-}
+  );
+};

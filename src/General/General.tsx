@@ -17,11 +17,11 @@ const General = () => {
         </div>
 
         <div className="flex w-[33.3%]">
-
+          <p>test</p>
         </div>
 
-        <div className="flex w-[33.3%]">
-          <Chat streamerNickname="OdynLive" />
+        <div className="flex w-[33.3%] h-[calc(100vh-60px)] items-center">
+          <Chat streamerNickname="odynlive" />
         </div>
       </div>
     </div>
