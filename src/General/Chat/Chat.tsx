@@ -1,5 +1,5 @@
+import { Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import Iframe from "react-iframe";
 
 interface Message {
   messageId: string;
@@ -44,12 +44,26 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
       try {
         const response = await fetch(`https://kick.com/api/v2/channels/${channelId}/messages`);
         const data = await response.json();
-        setMessages(data.data.messages);
+
+        const messagesWithAvatars = await Promise.all(data.data.messages.map(async (message: any) => {
+          // const avatar = await getChannelAvatar(streamerNickname, message.sender.username);
+          const avatar = "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+
+          return {
+            messageId: message.id,
+            authorName: message.sender.username,
+            authorAvatar: avatar,
+            content: message.content,
+          };
+        }));
+
+        setMessages(messagesWithAvatars);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
     };
 
+    fetchMessages();
     const interval = setInterval(fetchMessages, 2000);
 
     return () => clearInterval(interval);
@@ -57,14 +71,18 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
 
   return (
     <div className="Chat max-h-[90%] w-[80%] overflow-auto">
-      {messages.length > 0 && (
+      {messages.length > 0 ? (
         <div className="flex flex-col gap-2">
-          {messages.map((message: any) => (
-            <div key={message.id} className="flex gap-2 bg-black/40 p-2">
-              <p>{message.sender.username}</p>
-              <p>{message.content}</p>
+          {messages.map((message) => (
+            <div key={message.messageId} className="flex gap-2 bg-gray-800 p-2 rounded-xl">
+              <img src={message.authorAvatar} alt={`${message.authorName}'s avatar`} className="w-8 h-8 rounded-full" />
+              <p><b>{message.authorName}</b>: {message.content}</p>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="!overflow-hidden flex justify-center">
+          <Spinner label="Loading..." size="lg" color="default" />
         </div>
       )}
     </div>

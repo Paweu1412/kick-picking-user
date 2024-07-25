@@ -6,18 +6,18 @@ const General = () => {
   return (
     <div className="General w-screen h-screen bg-gray-900">
       <div className="w-full h-[60px] flex justify-center items-center bg-gray-800 gap-2">
-        <Input placeholder="Type the streamer nickname here..." className="w-[500px]" />
+        <Input placeholder="Type the streamer nickname here..." className="w-[500px] opacity-85" />
 
-        <Button color="primary">Search</Button>
+        <Button className="opacity-85">Search</Button>
       </div>
 
-      <div className="w-full h-max flex text-white">
+      <div className="w-full h-max flex text-white/90">
         <div className="flex w-[33.3%]">
-          <p>test</p>
+
         </div>
 
         <div className="flex w-[33.3%]">
-          <p>test</p>
+
         </div>
 
         <div className="flex w-[33.3%] h-[calc(100vh-60px)] items-center">
