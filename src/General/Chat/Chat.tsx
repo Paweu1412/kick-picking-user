@@ -1,4 +1,5 @@
-import { Spinner } from "@nextui-org/react";
+import { Card, Spinner } from "@nextui-org/react";
+import { Skeleton } from "@nextui-org/skeleton";
 import { useEffect, useState, useRef } from "react";
 
 interface Message {
@@ -30,6 +31,7 @@ const getChannelAvatar = async (streamerName: string, senderName: string, avatar
 export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
   const [channelId, setChannelId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const avatarCache = useRef<Record<string, string>>({}).current;
@@ -70,6 +72,7 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
         );
 
         setMessages(messagesWithAvatars.reverse());
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -97,23 +100,24 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
   };
 
   return (
-    <div className="Chat max-h-[90%] w-[80%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
-      {messages.length > 0 ? (
+    <div className="Chat h-[90%] max-h-[90%] w-[70%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
+      {loading ? (
+        <Card className="h-[100%] w-[100%] rounded-xl">
+          <Skeleton className="flex-1 h-8 rounded-xl !bg-gray-800" />
+        </Card>
+      ) : (
         <div className="flex flex-col gap-2">
           {messages.map((message) => (
             <div key={message.messageId} className="User flex gap-2 bg-gray-800 p-2 rounded-xl">
               <img src={message.authorAvatar} alt={`${message.authorName}'s avatar`} className="w-8 h-8 rounded-full" />
-              <p>
+              <p className="break-words max-w-[calc(100%-68px)]">
                 <b>{message.authorName === streamerNickname ? <span className="text-yellow-500">{message.authorName}</span> : message.authorName}</b>: {message.content}
               </p>
             </div>
           ))}
         </div>
-      ) : (
-        <div className="!overflow-hidden flex justify-center">
-          <Spinner label="Loading..." size="lg" color="default" />
-        </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
