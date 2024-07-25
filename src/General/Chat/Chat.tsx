@@ -28,8 +28,7 @@ const getChannelAvatar = async (streamerName: string, senderName: string, avatar
   }
 };
 
-export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
-  const [channelId, setChannelId] = useState<number | null>(null);
+export const Chat = ({ channelId, streamerNickname }: { channelId: number, streamerNickname: string }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -37,21 +36,8 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
   const avatarCache = useRef<Record<string, string>>({}).current;
 
   useEffect(() => {
-    const fetchChannelId = async () => {
-      try {
-        const response = await fetch(`https://kick.com/api/v2/channels/${streamerNickname}/`);
-        const data = await response.json();
-        setChannelId(data.id);
-      } catch (error) {
-        console.error("Error fetching channel ID:", error);
-      }
-    };
-
-    fetchChannelId();
-  }, [streamerNickname]);
-
-  useEffect(() => {
     if (channelId === null) return;
+    setLoading(true);
 
     const fetchMessages = async () => {
       try {
@@ -79,10 +65,10 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
     };
 
     fetchMessages();
-    const interval = setInterval(fetchMessages, 2000);
+    const interval = setInterval(fetchMessages, 3000);
 
     return () => clearInterval(interval);
-  }, [channelId, streamerNickname, avatarCache]);
+  }, [channelId]);
 
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
@@ -116,8 +102,7 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
             </div>
           ))}
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 };
