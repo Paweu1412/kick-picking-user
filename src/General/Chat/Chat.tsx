@@ -1,5 +1,5 @@
 import { Spinner } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface Message {
   messageId: string;
@@ -8,20 +8,31 @@ interface Message {
   content: string;
 }
 
-const getChannelAvatar = async (streamerName: string, senderName: string) => {
+const defaultAvatar = "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+
+const getChannelAvatar = async (streamerName: string, senderName: string, avatarCache: Record<string, string>) => {
+  if (avatarCache[senderName]) {
+    return avatarCache[senderName];
+  }
+
   try {
     const response = await fetch(`https://kick.com/api/v2/channels/${streamerName}/users/${senderName}`);
     const data = await response.json();
-    return data.profile_pic || "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+    const avatar = data.profile_pic || defaultAvatar;
+    avatarCache[senderName] = avatar;
+    return avatar;
   } catch (error) {
     console.error("Error fetching user avatar:", error);
-    return "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+    return defaultAvatar;
   }
 };
 
 export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
   const [channelId, setChannelId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const avatarCache = useRef<Record<string, string>>({}).current;
 
   useEffect(() => {
     const fetchChannelId = async () => {
@@ -45,19 +56,20 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
         const response = await fetch(`https://kick.com/api/v2/channels/${channelId}/messages`);
         const data = await response.json();
 
-        const messagesWithAvatars = await Promise.all(data.data.messages.map(async (message: any) => {
-          // const avatar = await getChannelAvatar(streamerNickname, message.sender.username);
-          const avatar = "https://dbxmjjzl5pc1g.cloudfront.net/9aba4794-aec9-4cff-9bf0-ae1a064ed665/images/user-profile-pic.png";
+        const messagesWithAvatars = await Promise.all(
+          data.data.messages.map(async (message: any) => {
+            const avatar = await getChannelAvatar(streamerNickname, message.sender.username, avatarCache);
 
-          return {
-            messageId: message.id,
-            authorName: message.sender.username,
-            authorAvatar: avatar,
-            content: message.content,
-          };
-        }));
+            return {
+              messageId: message.id,
+              authorName: message.sender.username,
+              authorAvatar: avatar,
+              content: message.content.replace(/\[emote:\d+:\w+\]/g, " [emoji] "), // Replace emote with '(emoji)'
+            };
+          })
+        );
 
-        setMessages(messagesWithAvatars);
+        setMessages(messagesWithAvatars.reverse());
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -67,16 +79,33 @@ export const Chat = ({ streamerNickname }: { streamerNickname: string }) => {
     const interval = setInterval(fetchMessages, 2000);
 
     return () => clearInterval(interval);
-  }, [channelId]);
+  }, [channelId, streamerNickname, avatarCache]);
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer && isAtBottom) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages, isAtBottom]);
+
+  const handleScroll = () => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      const atBottom = chatContainer.scrollHeight - chatContainer.scrollTop === chatContainer.clientHeight;
+      setIsAtBottom(atBottom);
+    }
+  };
 
   return (
-    <div className="Chat max-h-[90%] w-[80%] overflow-auto">
+    <div className="Chat max-h-[90%] w-[80%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
       {messages.length > 0 ? (
         <div className="flex flex-col gap-2">
           {messages.map((message) => (
-            <div key={message.messageId} className="flex gap-2 bg-gray-800 p-2 rounded-xl">
+            <div key={message.messageId} className="User flex gap-2 bg-gray-800 p-2 rounded-xl">
               <img src={message.authorAvatar} alt={`${message.authorName}'s avatar`} className="w-8 h-8 rounded-full" />
-              <p><b>{message.authorName}</b>: {message.content}</p>
+              <p>
+                <b>{message.authorName === streamerNickname ? <span className="text-yellow-500">{message.authorName}</span> : message.authorName}</b>: {message.content}
+              </p>
             </div>
           ))}
         </div>
