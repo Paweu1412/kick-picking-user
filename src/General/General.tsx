@@ -2,6 +2,7 @@ import { Input } from "@nextui-org/input";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { Chat } from "./Chat/Chat";
 import { useEffect, useState } from "react";
+import { Main } from "./Main/Main";
 
 const General = () => {
   const [inputValue, setInputValue] = useState("");
@@ -20,7 +21,7 @@ const General = () => {
   }, [streamerNickname, setStreamerNickname]);
 
   return (
-    <div className="General w-screen h-screen bg-gray-900 dark">
+    <div className="General w-screen h-screen bg-gray-900">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent className="flex flex-col bg-gray-900 text-white">
           {onClose => (
@@ -37,15 +38,15 @@ const General = () => {
 
       <div className="w-full h-[60px] flex justify-center items-center bg-gray-800 gap-2">
         <Input
-          variant="bordered"
+          color="default"
           placeholder="Enter the streamer's nickname here"
-          className="w-[500px] text-white"
+          className="w-[500px]"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
 
         <Button
-          className="text-white"
+          color="success"
           onClick={() => setStreamerNickname(inputValue)}
         >
           Search
@@ -58,10 +59,10 @@ const General = () => {
         </div>
 
         <div className="flex w-[33.3%]">
-
+          <Main />
         </div>
 
-        <div className="flex w-[33.3%] h-[calc(100vh-60px)] items-center justify-center">
+        <div className="flex w-[33.3%] h-[calc(100vh-60px)] items-center justify-center dark">
           {(streamerNickname !== "" && channelId !== null) && (
             <Chat channelId={channelId!} streamerNickname={streamerNickname} />
           )}
