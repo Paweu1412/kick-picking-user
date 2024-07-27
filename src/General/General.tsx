@@ -4,6 +4,16 @@ import { Chat } from "./Chat/Chat";
 import { useEffect, useState } from "react";
 import { Main } from "./Main/Main";
 import { List } from "./List/List";
+import { Roll } from "./Roll";
+
+const shuffleArray = (array: any) => {
+  let shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+};
 
 const General = () => {
   const [inputValue, setInputValue] = useState<string>("");
@@ -12,6 +22,10 @@ const General = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [keyword, setKeyword] = useState<string>("");
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
+  const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
+  const [isActivated, setIsActivated] = useState<boolean>(false);
+  const [timeAnimation, setTimeAnimation] = useState<number>(15);
+  const [animationType, setAnimationType] = useState<number>(0);
 
   const clearFilteredMessages = () => {
     setMessagesFiltered([]);
@@ -35,9 +49,32 @@ const General = () => {
     });
   };
 
+  useEffect(() => {
+    if (isActivated) { return; }
+
+    const viewersArray = messagesFiltered.map((message) => ({
+      authorName: message.authorName,
+      authorAvatar: message.authorAvatar,
+    }));
+
+    setInvolvedViewers(shuffleArray(viewersArray));
+  }, [isActivated, messagesFiltered]);
+
+  const handleRollItButtonClick = () => {
+    if (messagesFiltered.length < 2) return;
+
+    setIsActivated(true);
+  }
 
   return (
     <div className="General w-full h-full">
+      <Roll
+        animationTime={30}
+        animationType={animationType}
+        isActivated={isActivated}
+        involvedViewers={involvedViewers}
+      />
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent className="flex flex-col bg-gray-900 text-white">
           {onClose => (
@@ -77,17 +114,17 @@ const General = () => {
         </div>
 
         <div className="flex justify-center w-[33.3%]">
-          <Main onKeywordChange={(newKeyword) => setKeyword(newKeyword)} />
+          <Main onKeywordChange={(newKeyword) => setKeyword(newKeyword)} onRollItButonClick={() => handleRollItButtonClick()} />
         </div>
 
         <div className="flex justify-center w-[33.3%] dark">
           {(streamerNickname !== "" && channelId !== null) && (
-            <Chat channelId={channelId!} streamerNickname={streamerNickname} keyword={keyword} onMessagesFiltered={handleMessagesFiltered} />
+            <Chat channelId={channelId} streamerNickname={streamerNickname} keyword={keyword} onMessagesFiltered={handleMessagesFiltered} />
           )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default General;

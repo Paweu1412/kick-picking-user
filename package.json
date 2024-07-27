@@ -16,6 +16,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-iframe": "^1.8.5",
+    "react-roulette-pro": "^3.2.2",
     "universal-cookie": "^7.2.0"
   },
   "devDependencies": {
