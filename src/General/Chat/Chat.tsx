@@ -86,11 +86,9 @@ export const Chat = ({ channelId, streamerNickname }: { channelId: number, strea
   };
 
   return (
-    <div className="Chat h-[90%] max-h-[90%] w-[70%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
+    <div className="Chat max-h-[800px] mb-10 w-[70%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
       {loading ? (
-        <Card className="h-[100%] w-[100%] rounded-xl">
-          <Skeleton className="flex-1 h-8 rounded-xl !bg-gray-800" />
-        </Card>
+        <Skeleton className="h-[800px] rounded-xl !bg-gray-800" />
       ) : (
         <div className="flex flex-col gap-2">
           {messages.map((message) => (

@@ -3,6 +3,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDi
 import { Chat } from "./Chat/Chat";
 import { useEffect, useState } from "react";
 import { Main } from "./Main/Main";
+import { List } from "./List/List";
 
 const General = () => {
   const [inputValue, setInputValue] = useState("");
@@ -21,7 +22,7 @@ const General = () => {
   }, [streamerNickname, setStreamerNickname]);
 
   return (
-    <div className="General w-screen h-screen bg-gray-900">
+    <div className="General w-full h-full">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent className="flex flex-col bg-gray-900 text-white">
           {onClose => (
@@ -53,16 +54,16 @@ const General = () => {
         </Button>
       </div>
 
-      <div className="w-full h-max flex text-white/90">
-        <div className="flex w-[33.3%]">
-
+      <div className="relative w-full h-max flex min-h-[750px] text-white/90 mt-[45px]">
+        <div className="flex justify-center w-[33.3%]">
+          <List />
         </div>
 
-        <div className="flex w-[33.3%]">
+        <div className="flex justify-center w-[33.3%]">
           <Main />
         </div>
 
-        <div className="flex w-[33.3%] h-[calc(100vh-60px)] items-center justify-center dark">
+        <div className="flex justify-center w-[33.3%] dark">
           {(streamerNickname !== "" && channelId !== null) && (
             <Chat channelId={channelId!} streamerNickname={streamerNickname} />
           )}
