@@ -1,6 +1,6 @@
 import { Button, Input, Select, SelectItem } from "@nextui-org/react"
 
-export const Main = () => {
+export const Main = ({ onKeywordChange }: { onKeywordChange: (newKeyword: string) => void }) => {
   return (
     <div className="Main h-[90%] max-h-[90%] w-[100%] flex flex-col items-center gap-2">
       <div className="bg-gray-800 w-[70%] rounded-xl p-2">
@@ -22,6 +22,7 @@ export const Main = () => {
             type="text"
             labelPlacement="inside"
             className="text-black"
+            onChange={(e) => onKeywordChange(e.target.value)}
           />
         </div>
 

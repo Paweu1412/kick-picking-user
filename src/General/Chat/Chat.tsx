@@ -28,12 +28,33 @@ const getChannelAvatar = async (streamerName: string, senderName: string, avatar
   }
 };
 
-export const Chat = ({ channelId, streamerNickname }: { channelId: number, streamerNickname: string }) => {
+export const Chat = ({ channelId, streamerNickname, keyword, onMessagesFiltered }: { channelId: number, streamerNickname: string, keyword: string, onMessagesFiltered: (filteredMessages: any) => void }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const avatarCache = useRef<Record<string, string>>({}).current;
+
+  useEffect(() => {
+    if (keyword === "") { return; }
+
+    const uniqueAuthors = new Set();
+    const filteredMessages = messages.filter((message) => {
+      if (message.content.split(" ").length > 1) { return false; }
+
+      if (message.content === keyword && !uniqueAuthors.has(message.authorName)) {
+        uniqueAuthors.add(message.authorName);
+        return true;
+      }
+
+      return false;
+    }).map((message) => ({
+      authorName: message.authorName,
+      authorAvatar: message.authorAvatar
+    }));
+
+    onMessagesFiltered(filteredMessages);
+  }, [keyword, messages]);
 
   useEffect(() => {
     if (channelId === null) return;
@@ -56,6 +77,21 @@ export const Chat = ({ channelId, streamerNickname }: { channelId: number, strea
             };
           })
         );
+
+        const filteredMessages = messagesWithAvatars.filter((message) => {
+          if (message.content.split(" ").length === 1) {
+            if (message.content === keyword) {
+              return true;
+            }
+          }
+
+          return false;
+        }).map((message) => ({
+          authorName: message.authorName,
+          authorAvatar: message.authorAvatar
+        }));
+
+        onMessagesFiltered(filteredMessages);
 
         setMessages(messagesWithAvatars.reverse());
         setLoading(false);

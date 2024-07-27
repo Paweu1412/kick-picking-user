@@ -6,10 +6,16 @@ import { Main } from "./Main/Main";
 import { List } from "./List/List";
 
 const General = () => {
-  const [inputValue, setInputValue] = useState("");
-  const [streamerNickname, setStreamerNickname] = useState("");
+  const [inputValue, setInputValue] = useState<string>("");
+  const [streamerNickname, setStreamerNickname] = useState<string>("");
   const [channelId, setChannelId] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [keyword, setKeyword] = useState<string>("");
+  const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
+
+  useEffect(() => {
+    setMessagesFiltered([]);
+  }, [keyword]);
 
   useEffect(() => {
     if (streamerNickname === "") return;
@@ -21,6 +27,15 @@ const General = () => {
       .catch((error) => onOpen());
   }, [streamerNickname, setStreamerNickname]);
 
+  const handleMessagesFiltered = (newMessages: any) => {
+    setMessagesFiltered((prevMessages) => {
+      const filteredNewMessages = newMessages.filter((msg: any) => !prevMessages.some((prevMsg) => prevMsg.authorName === msg.authorName));
+
+      return [...prevMessages, ...filteredNewMessages];
+    });
+  };
+
+
   return (
     <div className="General w-full h-full">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -29,7 +44,7 @@ const General = () => {
             <>
               <ModalHeader>Whooops!</ModalHeader>
               <ModalBody>
-                <p>The channel you are looking for does not exist.<br></br>Please try again!</p>
+                <p>The channel you are looking for does not exist.<br />Please try again!</p>
               </ModalBody>
               <ModalFooter></ModalFooter>
             </>
@@ -55,17 +70,19 @@ const General = () => {
       </div>
 
       <div className="relative w-full h-max flex min-h-[750px] text-white/90 mt-[45px]">
-        <div className="flex justify-center w-[33.3%]">
-          <List />
+        <div className="flex justify-center w-[33.3%] dark">
+          {(streamerNickname !== "" && channelId !== null) && (
+            <List listOfViewers={messagesFiltered} />
+          )}
         </div>
 
         <div className="flex justify-center w-[33.3%]">
-          <Main />
+          <Main onKeywordChange={(newKeyword) => setKeyword(newKeyword)} />
         </div>
 
         <div className="flex justify-center w-[33.3%] dark">
           {(streamerNickname !== "" && channelId !== null) && (
-            <Chat channelId={channelId!} streamerNickname={streamerNickname} />
+            <Chat channelId={channelId!} streamerNickname={streamerNickname} keyword={keyword} onMessagesFiltered={handleMessagesFiltered} />
           )}
         </div>
       </div>
