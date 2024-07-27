@@ -24,8 +24,6 @@ const General = () => {
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
   const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
   const [isActivated, setIsActivated] = useState<boolean>(false);
-  const [timeAnimation, setTimeAnimation] = useState<number>(15);
-  const [animationType, setAnimationType] = useState<number>(0);
 
   const clearFilteredMessages = () => {
     setMessagesFiltered([]);
@@ -44,13 +42,12 @@ const General = () => {
   const handleMessagesFiltered = (newMessages: any) => {
     setMessagesFiltered((prevMessages) => {
       const filteredNewMessages = newMessages.filter((msg: any) => !prevMessages.some((prevMsg) => prevMsg.authorName === msg.authorName));
-
       return [...prevMessages, ...filteredNewMessages];
     });
   };
 
   useEffect(() => {
-    if (isActivated) { return; }
+    if (isActivated) return;
 
     const viewersArray = messagesFiltered.map((message) => ({
       authorName: message.authorName,
@@ -62,15 +59,14 @@ const General = () => {
 
   const handleRollItButtonClick = () => {
     if (messagesFiltered.length < 2) return;
-
     setIsActivated(true);
   }
 
   return (
     <div className="General w-full h-full">
       <Roll
-        animationTime={30}
-        animationType={animationType}
+        animationTime={60}
+        animationType={1}
         isActivated={isActivated}
         involvedViewers={involvedViewers}
       />
@@ -114,7 +110,7 @@ const General = () => {
         </div>
 
         <div className="flex justify-center w-[33.3%]">
-          <Main onKeywordChange={(newKeyword) => setKeyword(newKeyword)} onRollItButonClick={() => handleRollItButtonClick()} />
+          <Main onKeywordChange={setKeyword} onRollItButtonClick={handleRollItButtonClick} />
         </div>
 
         <div className="flex justify-center w-[33.3%] dark">

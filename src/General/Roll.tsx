@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import RoulettePro from 'react-roulette-pro';
 import 'react-roulette-pro/dist/index.css';
 
@@ -17,71 +17,69 @@ interface RollProps {
   involvedViewers: { authorName: string; authorAvatar: string }[];
 }
 
+// Helper function to shuffle an array
+const shuffleArray = (array: Prize[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 export const Roll = ({ animationType, animationTime, isActivated, involvedViewers }: RollProps) => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
-  const [winPrizeIndex, setWinPrizeIndex] = useState<number>(0);
-  const [prizeList, setPrizeList] = useState<Prize[]>([]);
-  const [prizeIndex, setPrizeIndex] = useState<number>(0);
-
+  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [selectedPrizeIndex, setSelectedPrizeIndex] = useState<number | null>(null);
   useEffect(() => {
-    if (involvedViewers.length === 0) { return };
-
-    const prizes: any = involvedViewers.map((viewer) => ({
+    const viewerPrizes: Prize[] = involvedViewers.map((viewer, index) => ({
       image: viewer.authorAvatar,
       text: viewer.authorName,
-      id: viewer.authorName,
+      id: `${index}` // Original ID
     }));
 
-    const reproductionArray = (array = [], length = 0) => [
-      ...Array(length)
-        .fill('_')
-        .map(() => array[Math.floor(Math.random() * array.length)]),
-    ];
+    const repeatedPrizes = Array(200).fill(null).flatMap((_, repeatIndex) =>
+      viewerPrizes.map(prize => ({
+        ...prize,
+        id: `${prize.id}-${repeatIndex}`
+      }))
+    );
 
-    const reproducedPrizeList = [
-      ...prizes,
-      ...reproductionArray(prizes, prizes.length * 3),
-      ...prizes,
-      ...reproductionArray(prizes, prizes.length),
-    ];
-
-    const generateId = () =>
-      `${Date.now().toString(36)}-${Math.random().toString(36).substring(2)}`;
-
-    setPrizeList(reproducedPrizeList.map((prize) => ({
-      ...prize,
-      id: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : generateId(),
-    })));
-
-    setPrizeIndex(prizes.length * 4);
+    const shuffledPrizes = shuffleArray(repeatedPrizes);
+    setPrizes(shuffledPrizes);
   }, [involvedViewers]);
 
   useEffect(() => {
-    if (isActivated) {
-      const timer = setTimeout(() => {
+    if (isActivated && !isSpinning) {
+      const randomIndex = Math.floor(Math.random() * prizes.length);
+      setSelectedPrizeIndex(randomIndex);
+
+      setTimeout(() => {
         setIsSpinning(true);
-      }, 3000);
-
-      return () => clearTimeout(timer);
+      }, 1000);
     }
-  }, [isActivated]);
+  }, [isActivated, prizes, animationTime]);
 
-  if (isActivated) {
-    return (
-      <div className="Roll absolute w-screen h-screen bg-black/50 flex justify-center items-center z-[100]">
-        <div className="w-[70%] h-[260px] bg-gray-800 rounded-xl flex justify-center items-center">
+  const handleStop = () => {
+    console.log(`Selected prize: ${prizes[selectedPrizeIndex ?? 0].text}`);
+  };
+
+  return (
+    isActivated && prizes.length > 0 ? (
+      <div className="Roll absolute w-screen h-full bg-black/50 flex justify-center items-center z-[100]">
+        <div className="w-[70%] h-[280px] bg-gray-800 rounded-xl flex justify-center items-center">
           <div className="h-[234px] w-[100%]">
             <RoulettePro
-              prizes={prizeList}
-              start={isSpinning}
-              prizeIndex={prizeIndex}
-              spinningTime={77}
+              prizes={prizes}
+              prizeIndex={selectedPrizeIndex ?? 0}
+              spinningTime={animationTime}
+              onPrizeDefined={handleStop}
+              options={{ withoutAnimation: true }}
               defaultDesignOptions={{ prizesWithText: true }}
-              onPrizeDefined={() => setIsSpinning(false)}
+              start={isSpinning}
             />
           </div>
         </div>
       </div>
-    );
-  }
-}
+    ) : null
+  );
+};
