@@ -1,20 +1,45 @@
-import { Input, Button, Checkbox } from "@nextui-org/react"
-import { useEffect } from "react"
+import { Button, Checkbox } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 
-export const List = ({ listOfViewers }: { listOfViewers: any }) => {
+export const List = ({ listOfViewers, onClear }: { listOfViewers: any, onClear: () => void }) => {
+  const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
+
   useEffect(() => {
-    console.log(listOfViewers)
-  }, [listOfViewers])
+    listOfViewers.forEach((viewer: any) => {
+      setCheckboxes((prevCheckboxes) => ({
+        ...prevCheckboxes,
+        [viewer.authorName]: prevCheckboxes[viewer.authorName] ?? true,
+      }));
+    });
+  }, [listOfViewers]);
+
+  const handleCheckboxChange = (viewerName: string, isChecked: boolean) => {
+    setCheckboxes((prevCheckboxes) => ({
+      ...prevCheckboxes,
+      [viewerName]: isChecked,
+    }));
+  };
 
   return (
     <div className="List h-[800px] mb-10 w-[100%] flex flex-col items-center gap-2">
-      <div className="bg-gray-800 w-[70%] h-max rounded-xl p-2">
-        <h1 className="font-bold text-xl text-center">List of viewers <span className="text-green-400">({listOfViewers.length})</span></h1>
+      <div className="bg-gray-800 w-[70%] h-max rounded-xl flex justify-between p-2">
+        <h1 className="font-bold text-xl text-center">
+          List of viewers <span className="text-green-400">({listOfViewers.length})</span>
+        </h1>
+
+        <Button
+          color="success"
+          size="sm"
+          className="h-[100%] font-bold"
+          onClick={onClear}
+        >
+          Clear
+        </Button>
       </div>
 
       <div className="w-[70%] !max-h-[800px] overflow-auto flex rounded-xl flex-col gap-2">
         {listOfViewers.map((viewer: any) => (
-          <div className="w-[100%] h-max bg-gray-800 flex rounded-xl p-1 gap-2">
+          <div key={viewer.authorName} className="w-[100%] h-max bg-gray-800 flex rounded-xl p-1 gap-2">
             <img
               src="https://img.freepik.com/premium-wektory/kick-logo-wektor-do-pobrania-kick-streaming-icon-wektor-logo-eps_691560-10814.jpg"
               alt="Kick logo"
@@ -24,11 +49,17 @@ export const List = ({ listOfViewers }: { listOfViewers: any }) => {
             <div className="w-[100%] flex justify-between">
               <span>{viewer.authorName}</span>
 
-              <Checkbox defaultSelected radius="full" color="success" className="p-0 -m-1" />
+              <Checkbox
+                isSelected={checkboxes[viewer.authorName] ?? false}
+                onChange={(e) => handleCheckboxChange(viewer.authorName, e.target.checked)}
+                radius="full"
+                color="success"
+                className="p-0 -m-1"
+              />
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

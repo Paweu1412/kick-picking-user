@@ -13,9 +13,9 @@ const General = () => {
   const [keyword, setKeyword] = useState<string>("");
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
 
-  useEffect(() => {
+  const clearFilteredMessages = () => {
     setMessagesFiltered([]);
-  }, [keyword]);
+  };
 
   useEffect(() => {
     if (streamerNickname === "") return;
@@ -72,7 +72,7 @@ const General = () => {
       <div className="relative w-full h-max flex min-h-[750px] text-white/90 mt-[45px]">
         <div className="flex justify-center w-[33.3%] dark">
           {(streamerNickname !== "" && channelId !== null) && (
-            <List listOfViewers={messagesFiltered} />
+            <List listOfViewers={messagesFiltered} onClear={clearFilteredMessages} />
           )}
         </div>
 
