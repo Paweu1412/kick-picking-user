@@ -24,6 +24,7 @@ const General = () => {
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
   const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
   const [isActivated, setIsActivated] = useState<boolean>(false);
+  const [time, setTime] = useState<string>('60');
 
   const clearFilteredMessages = () => {
     setMessagesFiltered([]);
@@ -59,13 +60,14 @@ const General = () => {
 
   const handleRollItButtonClick = () => {
     if (messagesFiltered.length < 2) return;
+
     setIsActivated(true);
   }
 
   return (
     <div className="General w-full h-full">
       <Roll
-        animationTime={60}
+        animationTime={parseInt(time)}
         animationType={1}
         isActivated={isActivated}
         involvedViewers={involvedViewers}
@@ -85,7 +87,7 @@ const General = () => {
         </ModalContent>
       </Modal>
 
-      <div className="w-full h-[60px] flex justify-center items-center bg-gray-800 gap-2">
+      <div className="w-full pl-4 pr-4 h-[60px] flex justify-center items-center bg-gray-800 gap-2">
         <Input
           color="default"
           placeholder="Enter the streamer's nickname here"
@@ -102,18 +104,18 @@ const General = () => {
         </Button>
       </div>
 
-      <div className="relative w-full h-max flex min-h-[750px] text-white/90 mt-[45px]">
-        <div className="flex justify-center w-[33.3%] dark">
+      <div className="relative w-full h-max flex flex-wrap min-h-[750px] text-white/90 lg:mt-[45px] lg:flex-row flex-col">
+        <div className="flex justify-center w-full lg:w-[33.3%] p-4">
           {(streamerNickname !== "" && channelId !== null) && (
             <List listOfViewers={messagesFiltered} onClear={clearFilteredMessages} />
           )}
         </div>
 
-        <div className="flex justify-center w-[33.3%]">
-          <Main onKeywordChange={setKeyword} onRollItButtonClick={handleRollItButtonClick} />
+        <div className="flex justify-center w-full lg:w-[33.3%] p-4">
+          <Main onKeywordChange={setKeyword} onRollItButtonClick={handleRollItButtonClick} onTimeSet={setTime} />
         </div>
 
-        <div className="flex justify-center w-[33.3%] dark">
+        <div className="flex justify-center w-full lg:w-[33.3%] p-4">
           {(streamerNickname !== "" && channelId !== null) && (
             <Chat channelId={channelId} streamerNickname={streamerNickname} keyword={keyword} onMessagesFiltered={handleMessagesFiltered} />
           )}

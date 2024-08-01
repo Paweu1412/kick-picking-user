@@ -122,7 +122,7 @@ export const Chat = ({ channelId, streamerNickname, keyword, onMessagesFiltered 
   };
 
   return (
-    <div className="Chat max-h-[800px] mb-10 w-[70%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
+    <div className="Chat max-h-[800px] mb-10 lg:w-[70%] w-[100%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
       {loading ? (
         <Skeleton className="h-[800px] rounded-xl !bg-gray-800" />
       ) : (
