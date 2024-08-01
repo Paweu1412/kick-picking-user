@@ -1,4 +1,4 @@
-import { Card, Spinner } from "@nextui-org/react";
+import { Button, Card, Spinner } from "@nextui-org/react";
 import { Skeleton } from "@nextui-org/skeleton";
 import { useEffect, useState, useRef } from "react";
 
@@ -49,8 +49,10 @@ export const Chat = ({ channelId, streamerNickname, keyword, onMessagesFiltered 
 
       return false;
     }).map((message) => ({
+      messageId: message.messageId,
       authorName: message.authorName,
-      authorAvatar: message.authorAvatar
+      authorAvatar: message.authorAvatar,
+      content: message.content
     }));
 
     onMessagesFiltered(filteredMessages);
@@ -87,8 +89,10 @@ export const Chat = ({ channelId, streamerNickname, keyword, onMessagesFiltered 
 
           return false;
         }).map((message) => ({
+          messageId: message.messageId,
           authorName: message.authorName,
-          authorAvatar: message.authorAvatar
+          authorAvatar: message.authorAvatar,
+          content: message.content
         }));
 
         onMessagesFiltered(filteredMessages);
@@ -122,19 +126,27 @@ export const Chat = ({ channelId, streamerNickname, keyword, onMessagesFiltered 
   };
 
   return (
-    <div className="Chat max-h-[800px] mb-10 lg:w-[70%] w-[100%] overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
+    <div className="Chat max-h-[800px] mb-10 lg:w-[90%] w-[100%]">
       {loading ? (
-        <Skeleton className="h-[800px] rounded-xl !bg-gray-800" />
+        <Skeleton className="h-[750px] lg:w-[90%] w-[100%] rounded-xl !bg-gray-800" />
       ) : (
         <div className="flex flex-col gap-2">
-          {messages.map((message) => (
-            <div key={message.messageId} className="User flex gap-2 bg-gray-800 p-2 rounded-xl">
-              <img src={message.authorAvatar} alt={`${message.authorName}'s avatar`} className="w-8 h-8 rounded-full" />
-              <p className="break-words max-w-[calc(100%-68px)]">
-                <b>{message.authorName === streamerNickname ? <span className="text-yellow-500">{message.authorName}</span> : message.authorName}</b>: {message.content}
-              </p>
-            </div>
-          ))}
+          <div className="bg-gray-800 lg:w-[90%] w-[100%] h-max rounded-xl flex justify-between p-2">
+            <h1 className="font-bold text-xl text-center">
+              Chat
+            </h1>
+          </div>
+
+          <div className="max-h-[700px] lg:w-[90%] w-[100%] flex flex-col gap-2 overflow-auto" ref={chatContainerRef} onScroll={handleScroll}>
+            {messages.map((message) => (
+              <div key={message.messageId} className="User flex gap-2 bg-gray-800 p-2 rounded-xl">
+                <img src={message.authorAvatar} alt={`${message.authorName}'s avatar`} className="w-8 h-8 rounded-full" />
+                <p className="break-words max-w-[calc(100%-68px)]">
+                  <b>{message.authorName === streamerNickname ? <span className="text-yellow-500">{message.authorName}</span> : message.authorName}</b>: {message.content}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

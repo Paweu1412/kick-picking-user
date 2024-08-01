@@ -10,11 +10,11 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
 
   return (
     <div className="Main h-[90%] max-h-[90%] w-[100%] flex flex-col items-center gap-2">
-      <div className="bg-gray-800 lg:w-[70%] w-[100%] rounded-xl p-2">
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-2">
         <h1 className="font-bold text-xl text-center"><span className="text-green-400">KICK.com</span> Random Winner Picker</h1>
       </div>
 
-      <div className="bg-gray-800 lg:w-[70%] w-[100%] rounded-xl p-4 flex flex-col gap-4">
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-4 flex flex-col gap-4">
         <div className="Keyword flex flex-col gap-1">
           <h1 className="font-bold text-lg pl-1">Keyword:</h1>
           <Input
@@ -45,7 +45,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         <div className="Style flex flex-col gap-1">
           <h1 className="font-bold text-lg pl-1">Animation time:</h1>
           <Input
-            placeholder="Enter the value (seconds; 20-100)"
+            placeholder="Enter the value (20-100 seconds)"
             type="number"
             labelPlacement="inside"
             className="text-black"
@@ -72,7 +72,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         </div>
       </div>
 
-      <div className="bg-gray-800 lg:w-[70%] w-[100%] h-max rounded-xl p-4 flex flex-col gap-4">
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] h-max rounded-xl p-4 flex flex-col gap-4">
         <Button
           color="success"
           className="text-lg"
@@ -82,7 +82,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         </Button>
       </div>
 
-      <div className="bg-gray-800 lg:w-[70%] w-[100%] rounded-xl p-4">
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-4">
         <img
           src="https://www.parkgateshopping.co.uk/wp-content/uploads/2022/08/Asda1.png"
           className="w-[100%] h-[150px]"
@@ -90,7 +90,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         />
       </div>
 
-      <div className="bg-gray-800 lg:w-[70%] w-[100%] text-lg rounded-xl p-4 font-bold text-center">
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] text-lg rounded-xl p-4 font-bold text-center">
         Made by <a href="https://github.com/Paweu1412" className="text-green-400 hover:text-green-500">Paweł Nosalski</a> © 2024
       </div>
     </div>

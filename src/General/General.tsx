@@ -25,6 +25,7 @@ const General = () => {
   const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
   const [isActivated, setIsActivated] = useState<boolean>(false);
   const [time, setTime] = useState<string>('60');
+  const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
 
   const clearFilteredMessages = () => {
     setMessagesFiltered([]);
@@ -71,6 +72,8 @@ const General = () => {
         animationType={1}
         isActivated={isActivated}
         involvedViewers={involvedViewers}
+        messages={messagesFiltered}
+        closeIsActivated={() => setIsActivated(false)}
       />
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
