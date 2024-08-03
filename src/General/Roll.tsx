@@ -20,7 +20,7 @@ interface RollProps {
 }
 
 const shuffleArray = (array: Prize[]): Prize[] => {
-  const shuffledArray = array.slice(); // Avoid mutating the original array
+  const shuffledArray = array.slice();
   for (let i = shuffledArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
@@ -70,11 +70,9 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
       const randomIndex = Math.floor(Math.random() * prizes.length);
       setSelectedPrizeIndex(randomIndex);
 
-      const timeout = setTimeout(() => {
+      setTimeout(() => {
         setIsSpinning(true);
       }, 2000);
-
-      return () => clearTimeout(timeout);
     }
   }, [isActivated, prizes, isSpinning, isAnimationFinished]);
 

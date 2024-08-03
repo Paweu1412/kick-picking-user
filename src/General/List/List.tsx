@@ -55,6 +55,7 @@ export const List = ({ listOfViewers, onClear }: { listOfViewers: any, onClear: 
                 radius="full"
                 color="success"
                 className="p-0 -m-1"
+                isDisabled={true}
               />
             </div>
           </div>

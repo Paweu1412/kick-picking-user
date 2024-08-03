@@ -9,6 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "homepage": ".",
   "dependencies": {
     "@nextui-org/react": "^2.4.6",
     "framer-motion": "^11.3.17",

@@ -7,7 +7,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
   return (
     <div className="Main h-[90%] max-h-[90%] w-[100%] flex flex-col items-center gap-2">
       <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-2">
-        <h1 className="font-bold text-xl text-center"><span className="text-green-400">KICK.com</span> Random Winner Picker</h1>
+        <h1 className="font-bold text-xl text-center"><span className="text-green-400">KICK.com</span> STREAM ROULETTE</h1>
       </div>
 
       <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-4 flex flex-col gap-4">
@@ -90,12 +90,15 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         </Button>
       </div>
 
-      <div className="bg-gray-800 lg:w-[90%] w-[100%] rounded-xl p-4">
-        <img
+      <div className="bg-gray-800 lg:w-[90%] w-[100%] h-[150px] rounded-xl flex-col p-4 flex justify-center items-center gap-3">
+        {/* <img
           src="https://www.parkgateshopping.co.uk/wp-content/uploads/2022/08/Asda1.png"
           className="w-[100%] h-[150px]"
           alt="Asda"
-        />
+        /> */}
+
+        <h2 className="text-2xl text-center font-bold">SPACE FOR YOUR AD BANNER</h2>
+        <span className="text-2xl text-center font-bold text-green-400">📧 <a href="mailto:pa.nosalski@gmail.com">pa.nosalski@gmail.com</a></span>
       </div>
 
       <div className="bg-gray-800 lg:w-[90%] w-[100%] text-lg rounded-xl p-4 font-bold text-center">
