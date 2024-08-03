@@ -1,12 +1,8 @@
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem, Slider } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
-export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKeywordChange: (newKeyword: string) => void, onRollItButtonClick: () => void, onTimeSet: (value: string) => void }) => {
-  const [time, setTime] = useState<string>('');
-
-  useEffect(() => {
-    onTimeSet(time);
-  }, [time]);
+export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKeywordChange: (newKeyword: string) => void, onRollItButtonClick: () => void, onTimeSet: (value: number) => void }) => {
+  const [time, setTime] = useState<number>(20);
 
   return (
     <div className="Main h-[90%] max-h-[90%] w-[100%] flex flex-col items-center gap-2">
@@ -18,7 +14,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         <div className="Keyword flex flex-col gap-1">
           <h1 className="font-bold text-lg pl-1">Keyword:</h1>
           <Input
-            placeholder="Enter the value"
+            placeholder="Enter the word"
             type="text"
             labelPlacement="inside"
             className="text-black"
@@ -43,8 +39,8 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
         </div>
 
         <div className="Style flex flex-col gap-1">
-          <h1 className="font-bold text-lg pl-1">Animation time:</h1>
-          <Input
+          <h1 className="font-bold text-lg pl-1">Animation time: <span className="font-normal">{time} seconds</span></h1>
+          {/* <Input
             placeholder="Enter the value (20-100 seconds)"
             type="number"
             labelPlacement="inside"
@@ -68,6 +64,18 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
                 setTime(value.toString());
               }
             }}
+          /> */}
+
+          <Slider
+            minValue={20}
+            maxValue={90}
+            defaultValue={20}
+            value={time}
+            step={1}
+            aria-label="Animation time (20-90 seconds)"
+            color="success"
+            size="md"
+            onChange={(value: any) => { setTime(value); onTimeSet(value); }}
           />
         </div>
       </div>

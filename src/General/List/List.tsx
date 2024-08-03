@@ -41,9 +41,9 @@ export const List = ({ listOfViewers, onClear }: { listOfViewers: any, onClear: 
         {listOfViewers.map((viewer: any) => (
           <div key={viewer.authorName} className="w-[100%] h-max bg-gray-800 flex rounded-xl p-1 gap-2">
             <img
-              src="https://img.freepik.com/premium-wektory/kick-logo-wektor-do-pobrania-kick-streaming-icon-wektor-logo-eps_691560-10814.jpg"
+              src={viewer.authorAvatar || "https://img.freepik.com/premium-wektory/kick-logo-wektor-do-pobrania-kick-streaming-icon-wektor-logo-eps_691560-10814.jpg"}
               alt="Kick logo"
-              className="ml-1 w-[22px] saturate-0"
+              className={"ml-1 w-[22px] h-[22px] rounded-full " + (!checkboxes[viewer.authorName] && "saturate-0")}
             />
 
             <div className="w-[100%] flex justify-between">

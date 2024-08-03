@@ -1,5 +1,6 @@
 import { Button } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
+import ConfettiExplosion from "react-confetti-explosion";
 import RoulettePro from 'react-roulette-pro';
 import 'react-roulette-pro/dist/index.css';
 
@@ -18,12 +19,13 @@ interface RollProps {
   closeIsActivated: () => void;
 }
 
-const shuffleArray = (array: Prize[]) => {
-  for (let i = array.length - 1; i > 0; i--) {
+const shuffleArray = (array: Prize[]): Prize[] => {
+  const shuffledArray = array.slice(); // Avoid mutating the original array
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
   }
-  return array;
+  return shuffledArray;
 };
 
 export const Roll = ({ animationType, animationTime, isActivated, involvedViewers, messages, closeIsActivated }: RollProps) => {
@@ -32,6 +34,7 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
   const [selectedPrizeIndex, setSelectedPrizeIndex] = useState<number | null>(null);
   const [isAnimationFinished, setIsAnimationFinished] = useState<boolean>(false);
   const [winnerMessages, setWinnerMessages] = useState<{ authorName: string; content: string; messageId: string; }[]>([]);
+  const [isExploding, setIsExploding] = useState<boolean>(true);
 
   useEffect(() => {
     const viewerPrizes: Prize[] = involvedViewers.map((viewer, index) => ({
@@ -40,15 +43,14 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
       id: `${index}`
     }));
 
-    const repeatedPrizes = Array(200).fill(null).flatMap((_, repeatIndex) =>
+    const repeatedPrizes = Array.from({ length: 200 }, (_, repeatIndex) =>
       viewerPrizes.map(prize => ({
         ...prize,
         id: `${prize.id}-${repeatIndex}`
       }))
-    );
+    ).flat();
 
-    const shuffledPrizes = shuffleArray(repeatedPrizes);
-    setPrizes(shuffledPrizes);
+    setPrizes(shuffleArray(repeatedPrizes));
   }, [involvedViewers]);
 
   useEffect(() => {
@@ -56,32 +58,54 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
       const randomIndex = Math.floor(Math.random() * prizes.length);
       setSelectedPrizeIndex(randomIndex);
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setIsSpinning(true);
       }, 1000);
+
+      return () => clearTimeout(timeout);
     }
-  }, [isActivated, prizes, animationTime, isSpinning, isAnimationFinished]);
+  }, [isActivated, prizes, isSpinning, isAnimationFinished]);
 
   const handleStop = () => {
     if (selectedPrizeIndex !== null) {
       const winner = prizes[selectedPrizeIndex];
-      const filteredMessages = messages.filter(message => message.authorName === winner.text);
-      setWinnerMessages(filteredMessages);
+      setWinnerMessages(messages.filter(message => message.authorName === winner.text));
 
       setTimeout(() => {
         setIsAnimationFinished(true);
         setIsSpinning(false);
+        setIsExploding(true);
       }, 2000);
     }
   };
 
+  const handleCancel = () => {
+    setIsAnimationFinished(true);
+    setIsSpinning(false);
+    closeIsActivated();
+    setPrizes([]);
+    setSelectedPrizeIndex(null);
+    setWinnerMessages([]);
+    setIsExploding(false);
+  }
+
   useEffect(() => {
-    console.log(winnerMessages);
-  }, [winnerMessages]);
+    if (!isActivated) {
+      setIsSpinning(false);
+      setIsAnimationFinished(false);
+      setSelectedPrizeIndex(null);
+      setWinnerMessages([]);
+      setIsExploding(false);
+    }
+  }, [isActivated]);
 
   return (
     isActivated && prizes.length > 0 ? (
       <div className="Roll fixed inset-0 w-full h-full bg-black/50 flex justify-center items-center z-[100]">
+        <div className="!absolute w-screen h-screen flex justify-center">
+          {isExploding && <ConfettiExplosion force={0.8} duration={3000} particleCount={200} width={2000} />}
+        </div>
+
         {isAnimationFinished && selectedPrizeIndex !== null && prizes[selectedPrizeIndex] ? (
           <div className="lg:w-[550px] w-[90%] rounded-xl flex flex-col gap-2">
             <div className="bg-gray-800 h-max rounded-xl flex flex-col items-center p-2 gap-4">
@@ -89,7 +113,7 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
                 🏆 {prizes[selectedPrizeIndex].text} 🏆
               </h1>
 
-              <img src={prizes[selectedPrizeIndex].image} className="w-[200px] h-[200px] rounded-xl" />
+              <img src={prizes[selectedPrizeIndex].image} className="w-[200px] h-[200px] rounded-xl" alt="Winner Avatar" />
 
               <div className="overflow-auto w-[100%] max-h-[150px] flex flex-col gap-2 scrollbar-hide">
                 {winnerMessages.map((message) => (
@@ -103,17 +127,13 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
             <Button
               color="danger"
               className="text-lg bg-red-700"
-              onClick={() => {
-                setIsAnimationFinished(false);
-                setSelectedPrizeIndex(null);
-                closeIsActivated();
-              }}
+              onClick={handleCancel}
             >
               Close
             </Button>
           </div>
         ) : (
-          <div className="w-[70%] h-[280px] bg-gray-800 rounded-xl flex justify-center items-center">
+          <div className="w-[70%] h-[360px] bg-gray-800 rounded-xl flex flex-col justify-start items-center pt-8 gap-6">
             <div className="h-[234px] w-[100%]">
               <RoulettePro
                 prizes={prizes}
@@ -125,6 +145,14 @@ export const Roll = ({ animationType, animationTime, isActivated, involvedViewer
                 start={isSpinning}
               />
             </div>
+
+            <Button
+              color="danger"
+              className="text-lg bg-red-700"
+              onClick={handleCancel}
+            >
+              Stop the prize
+            </Button>
           </div>
         )}
       </div>

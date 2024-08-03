@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Main } from "./Main/Main";
 import { List } from "./List/List";
 import { Roll } from "./Roll";
+import ConfettiExplosion from "react-confetti-explosion";
 
 const shuffleArray = (array: any) => {
   let shuffledArray = [...array];
@@ -24,7 +25,7 @@ const General = () => {
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
   const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
   const [isActivated, setIsActivated] = useState<boolean>(false);
-  const [time, setTime] = useState<string>('60');
+  const [time, setTime] = useState<number>(20);
   const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
 
   const clearFilteredMessages = () => {
@@ -32,13 +33,21 @@ const General = () => {
   };
 
   useEffect(() => {
+    let isCancelled: boolean = false;
+
     if (streamerNickname === "") return;
     setChannelId(null);
 
     fetch(`https://kick.com/api/v2/channels/${streamerNickname}/`)
       .then((response) => response.json())
-      .then((data) => setChannelId(data.id))
+      .then((data) => {
+        if (isCancelled) return;
+
+        setChannelId(data.id);
+      })
       .catch((error) => onOpen());
+
+    return () => { isCancelled = true; };
   }, [streamerNickname, setStreamerNickname]);
 
   const handleMessagesFiltered = (newMessages: any) => {
@@ -68,7 +77,7 @@ const General = () => {
   return (
     <div className="General w-full h-full">
       <Roll
-        animationTime={parseInt(time)}
+        animationTime={time}
         animationType={1}
         isActivated={isActivated}
         involvedViewers={involvedViewers}
