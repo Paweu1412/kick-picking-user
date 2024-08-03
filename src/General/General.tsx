@@ -21,6 +21,7 @@ const General = () => {
   const [streamerNickname, setStreamerNickname] = useState<string>("");
   const [channelId, setChannelId] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [error, setError] = useState<string>("");
   const [keyword, setKeyword] = useState<string>("");
   const [messagesFiltered, setMessagesFiltered] = useState<any[]>([]);
   const [involvedViewers, setInvolvedViewers] = useState<any[]>([]);
@@ -45,7 +46,10 @@ const General = () => {
 
         setChannelId(data.id);
       })
-      .catch((error) => onOpen());
+      .catch((error) => {
+        setError("The channel you are looking for does not exist. Please try again!");
+        onOpen()
+      });
 
     return () => { isCancelled = true; };
   }, [streamerNickname, setStreamerNickname]);
@@ -69,7 +73,11 @@ const General = () => {
   }, [isActivated, messagesFiltered]);
 
   const handleRollItButtonClick = () => {
-    if (messagesFiltered.length < 2) return;
+    if (messagesFiltered.length < 2) {
+      setError("There should be at least 2 viewers involved. Please try again!");
+      onOpen();
+      return;
+    };
 
     setIsActivated(true);
   }
@@ -91,7 +99,7 @@ const General = () => {
             <>
               <ModalHeader>Whooops!</ModalHeader>
               <ModalBody>
-                <p>The channel you are looking for does not exist.<br />Please try again!</p>
+                {error}
               </ModalBody>
               <ModalFooter></ModalFooter>
             </>
@@ -124,7 +132,7 @@ const General = () => {
         </div>
 
         <div className="flex justify-center w-full lg:w-[33.3%] p-4">
-          <Main onKeywordChange={setKeyword} onRollItButtonClick={handleRollItButtonClick} onTimeSet={setTime} />
+          <Main onKeywordChange={setKeyword} onRollItButtonClick={handleRollItButtonClick} onTimeSet={setTime} isChannelSet={streamerNickname !== "" ? true : false} />
         </div>
 
         <div className="flex justify-center w-full lg:w-[33.3%] p-4">

@@ -1,7 +1,7 @@
-import { Button, Input, Select, SelectItem, Slider } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem, Slider, Tooltip } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
-export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKeywordChange: (newKeyword: string) => void, onRollItButtonClick: () => void, onTimeSet: (value: number) => void }) => {
+export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet, isChannelSet }: { onKeywordChange: (newKeyword: string) => void, onRollItButtonClick: () => void, onTimeSet: (value: number) => void, isChannelSet: boolean }) => {
   const [time, setTime] = useState<number>(20);
 
   return (
@@ -85,6 +85,7 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet }: { onKe
           color="success"
           className="text-lg"
           onClick={() => onRollItButtonClick()}
+          isDisabled={!isChannelSet}
         >
           Roll it!
         </Button>
