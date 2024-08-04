@@ -100,6 +100,18 @@ export const Main = ({ onKeywordChange, onRollItButtonClick, onTimeSet, isChanne
 
         <h2 className="text-2xl text-center font-bold">SPACE FOR YOUR AD BANNER</h2>
         <span className="text-2xl text-center font-bold text-green-400">📧 <a href="mailto:pa.nosalski@gmail.com">pa.nosalski@gmail.com</a></span>
+
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8719045687817711"
+          crossOrigin="anonymous"></script>
+        <ins className="adsbygoogle"
+          style={{ display: "block" }}
+          data-ad-client="ca-pub-8719045687817711"
+          data-ad-slot="3269370285"
+          data-ad-format="auto"
+          data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({ });
+        </script>
       </div>
 
       <div className="bg-gray-800 lg:w-[90%] w-[100%] text-lg rounded-xl p-4 font-bold text-center">
